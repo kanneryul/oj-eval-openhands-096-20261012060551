@@ -1,49 +1,37 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
-#include <sstream>
-#include <string>
 
 using namespace std;
-
-struct TreeNode {
-    int val;
-    TreeNode* left;
-    TreeNode* right;
-    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
-};
 
 struct NodeInfo {
     int depth;
     int parent;
-    NodeInfo(int d, int p) : depth(d), parent(p) {}
 };
 
 class Solution {
 private:
-    unordered_map<int, NodeInfo*> nodeMap;
+    unordered_map<int, NodeInfo> nodeMap;
     int index;
     
-    TreeNode* buildTree(const vector<int>& preorder, int depth, int parent) {
+    void buildTree(const vector<int>& preorder, int depth, int parent) {
         if (index >= static_cast<int>(preorder.size())) {
-            return nullptr;
+            return;
         }
         
         int val = preorder[index];
         index++;
         
         if (val == -1) {
-            return nullptr;
+            return;
         }
         
         // Store node information
-        nodeMap[val] = new NodeInfo(depth, parent);
+        nodeMap[val] = {depth, parent};
         
-        TreeNode* node = new TreeNode(val);
-        node->left = buildTree(preorder, depth + 1, val);
-        node->right = buildTree(preorder, depth + 1, val);
-        
-        return node;
+        // Recursively build left and right subtrees
+        buildTree(preorder, depth + 1, val);
+        buildTree(preorder, depth + 1, val);
     }
     
 public:
@@ -60,16 +48,10 @@ public:
             return false;
         }
         
-        NodeInfo* infoX = nodeMap[x];
-        NodeInfo* infoY = nodeMap[y];
+        const NodeInfo& infoX = nodeMap[x];
+        const NodeInfo& infoY = nodeMap[y];
         
-        return (infoX->depth == infoY->depth) && (infoX->parent != infoY->parent);
-    }
-    
-    ~Solution() {
-        for (auto& pair : nodeMap) {
-            delete pair.second;
-        }
+        return (infoX.depth == infoY.depth) && (infoX.parent != infoY.parent);
     }
 };
 
