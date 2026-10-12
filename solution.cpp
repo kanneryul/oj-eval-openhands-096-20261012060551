@@ -73,39 +73,38 @@ public:
     }
 };
 
-vector<int> parseLineToIntegers(const string& line) {
-    vector<int> result;
-    stringstream ss(line);
-    int num;
-    while (ss >> num) {
-        result.push_back(num);
-    }
-    return result;
-}
-
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    string line;
-    
-    // Read number of queries
-    getline(cin, line);
-    int q = stoi(line);
-    
-    // Read queries
-    vector<pair<int, int>> queries;
-    for (int i = 0; i < q; i++) {
-        getline(cin, line);
-        vector<int> nums = parseLineToIntegers(line);
-        if (nums.size() >= 2) {
-            queries.emplace_back(nums[0], nums[1]);
-        }
+    // Read all input from stdin
+    vector<int> allNumbers;
+    int num;
+    while (cin >> num) {
+        allNumbers.push_back(num);
     }
     
-    // Read tree preorder traversal
-    getline(cin, line);
-    vector<int> preorder = parseLineToIntegers(line);
+    if (allNumbers.empty()) {
+        return 0;
+    }
+    
+    // First number is the number of queries
+    int q = allNumbers[0];
+    
+    // Extract queries (2 numbers per query)
+    vector<pair<int, int>> queries;
+    int idx = 1;
+    for (int i = 0; i < q && idx + 1 < static_cast<int>(allNumbers.size()); i++) {
+        queries.emplace_back(allNumbers[idx], allNumbers[idx + 1]);
+        idx += 2;
+    }
+    
+    // Remaining numbers are the tree preorder traversal
+    vector<int> preorder;
+    while (idx < static_cast<int>(allNumbers.size())) {
+        preorder.push_back(allNumbers[idx]);
+        idx++;
+    }
     
     // Build tree and process queries
     Solution solution;
